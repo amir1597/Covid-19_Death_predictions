@@ -121,3 +121,48 @@ ax.set_title('Pregnancy vs Death Outcome (Females Only)')
 ax.set_xlabel('Pregnant (0 = No, 1 = Yes)')
 ax.set_ylabel('Count')
 st.pyplot(fig)
+
+def plot_feature_death_rate(feature):
+    feature_data = covid_data[[feature, 'death']].dropna()
+    
+    # Calculate death rate per category in the feature
+    death_rate = feature_data.groupby(feature)['death'].mean().reset_index()
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.barplot(x=feature, y='death', data=death_rate, palette='coolwarm', ax=ax)
+    ax.set_title(f'Death Rate by {feature}')
+    ax.set_xlabel(f'{feature} (0 = No, 1 = Yes)')
+    ax.set_ylabel('Death Rate')
+    return fig
+
+# List of categorical features to analyze
+categorical_features = ['DIABETES', 'PNEUMONIA', 'COPD', 'ASTHMA', 'INMSUPR', 'HIPERTENSION', 
+                        'CARDIOVASCULAR', 'OBESITY', 'RENAL_CHRONIC', 'TOBACCO', 'PREGNANT']
+
+# Display bar plots for each feature
+st.write("### Death Rate by Medical Condition and Other Features")
+for feature in categorical_features:
+    st.write(f"### {feature}")
+    st.pyplot(plot_feature_death_rate(feature))
+
+# Age Distribution by Death Outcome
+st.write("### Age Distribution by Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.boxplot(x='death', y='AGE', data=covid_data, palette='Set3', ax=ax)
+ax.set_title('Age Distribution for Death vs Survival')
+ax.set_xlabel('Death (0 = Survived, 1 = Died)')
+ax.set_ylabel('Age')
+st.pyplot(fig)
+
+# Pregnancy vs Death Outcome (Filtered by Sex)
+st.write("### Pregnancy vs Death Outcome (Females Only)")
+# Filter the data for females (SEX = 2)
+female_data = covid_data[covid_data['SEX'] == 2]
+
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='PREGNANT', hue='death', data=female_data, palette='Set2', ax=ax)
+ax.set_title('Pregnancy vs Death Outcome (Females Only)')
+ax.set_xlabel('Pregnant (0 = No, 1 = Yes)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
