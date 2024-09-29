@@ -3,35 +3,57 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# Load dataset
-st.title("Medical Data Visualization")
+# Title for the app
+st.title("Medical Data Visualization - COVID-19")
 
-covid_data = pd.read_csv('Covid_data.csv')
+# Load dataset with caching for performance
+@st.cache_data
+def load_data():
+    try:
+        covid_data = pd.read_csv('Covid_data.csv')
+        return covid_data
+    except FileNotFoundError:
+        st.error("Dataset not found. Please check the file path.")
+        st.stop()
 
-st.write("Dataset Preview:")
+covid_data = load_data()
+
+# Display dataset preview
+st.write("### Dataset Preview")
 st.dataframe(covid_data.head())
 
-st.write("EDA")
+# Handle missing and incorrect data (converting date columns)
+st.write("### EDA")
 covid_data['ID'] = covid_data.index
-covid_data['death'] = covid_data['DATE_DIED'].apply(lambda x: 1 if x != '9999-99-99' else 0)
+
+# Handle 'DATE_DIED' column and create 'death' indicator
+covid_data['DATE_DIED'] = pd.to_datetime(covid_data['DATE_DIED'], errors='coerce')
+covid_data['death'] = covid_data['DATE_DIED'].apply(lambda x: 1 if pd.notnull(x) else 0)
+
+# Display missing values and duplicated rows count
+st.write("Missing Values in Each Column:")
 st.write(covid_data.isnull().sum())
+
+st.write("Number of Duplicated Rows:")
 st.write(covid_data.duplicated().sum())
-st.write("Basic Statistics:")
+
+# Display basic statistics of the dataset
+st.write("### Basic Statistics")
 st.write(covid_data.describe())
 
 # Age Distribution
 st.write("### Age Distribution")
 fig, ax = plt.subplots(figsize=(8, 5))
-sns.histplot(covid_data['AGE'], bins=30, kde=True, color='blue', ax=ax)
+sns.histplot(covid_data['AGE'].dropna(), bins=30, kde=True, color='blue', ax=ax)
 ax.set_title('Age Distribution')
 ax.set_xlabel('Age')
 ax.set_ylabel('Frequency')
 st.pyplot(fig)
 
-# Death Rate
+# Death Outcome Distribution
 st.write("### Death Outcome Distribution")
 fig, ax = plt.subplots(figsize=(6, 4))
-sns.countplot(x='death', data=covid_data, palette='Set2', ax=ax)
+sns.countplot(x='death', hue='death', data=covid_data, palette='Set2', ax=ax, legend=False)
 ax.set_title('Death Outcome Distribution')
 ax.set_xlabel('Death (0 = No, 1 = Yes)')
 ax.set_ylabel('Count')
@@ -40,13 +62,13 @@ st.pyplot(fig)
 # Sex Distribution
 st.write("### Sex Distribution")
 fig, ax = plt.subplots(figsize=(6, 4))
-sns.countplot(x='SEX', data=covid_data, palette='Set1', ax=ax)
+sns.countplot(x='SEX', hue='SEX', data=covid_data, palette='Set1', ax=ax, legend=False)
 ax.set_title('Distribution of Sex')
 ax.set_xlabel('Sex (1 = Male, 2 = Female)')
 ax.set_ylabel('Count')
 st.pyplot(fig)
 
-# ICU vs Death
+# ICU Admission vs Death Outcome
 st.write("### ICU Admission vs Death Outcome")
 fig, ax = plt.subplots(figsize=(8, 5))
 sns.countplot(x='ICU', hue='death', data=covid_data, palette='coolwarm', ax=ax)
@@ -63,10 +85,12 @@ sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=
 ax.set_title('Correlation Heatmap')
 st.pyplot(fig)
 
-# Conditions Bar Plot
+# Medical Conditions Distribution
 st.write("### Medical Conditions Distribution")
 conditions = ['DIABETES', 'PNEUMONIA', 'COPD', 'ASTHMA', 'INMSUPR', 'HIPERTENSION', 
               'CARDIOVASCULAR', 'OBESITY', 'RENAL_CHRONIC', 'TOBACCO']
+
+# Sum of conditions and sort
 covid_data_conditions = covid_data[conditions].sum().sort_values(ascending=False)
 
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -77,8 +101,8 @@ ax.set_ylabel('Count')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 st.pyplot(fig)
 
-# Boxplot for Age vs Death
-st.write("### Age vs Death")
+# Age vs Death Boxplot
+st.write("### Age Distribution by Death Outcome")
 fig, ax = plt.subplots(figsize=(8, 6))
 sns.boxplot(x='death', y='AGE', data=covid_data, palette='Set3', ax=ax)
 ax.set_title('Age Distribution for Death vs Survival')
@@ -86,12 +110,14 @@ ax.set_xlabel('Death (0 = Survived, 1 = Died)')
 ax.set_ylabel('Age')
 st.pyplot(fig)
 
-# Pregnancy vs Death
-st.write("### Pregnancy vs Death Outcome")
+# Pregnancy vs Death Outcome (Filtered by Sex)
+st.write("### Pregnancy vs Death Outcome (Females Only)")
+# Filter the data for females (SEX = 2)
+female_data = covid_data[covid_data['SEX'] == 2]
+
 fig, ax = plt.subplots(figsize=(8, 6))
-sns.countplot(x='PREGNANT', hue='death', data=covid_data, palette='Set2', ax=ax)
-ax.set_title('Pregnancy vs Death Outcome')
+sns.countplot(x='PREGNANT', hue='death', data=female_data, palette='Set2', ax=ax)
+ax.set_title('Pregnancy vs Death Outcome (Females Only)')
 ax.set_xlabel('Pregnant (0 = No, 1 = Yes)')
 ax.set_ylabel('Count')
 st.pyplot(fig)
-
