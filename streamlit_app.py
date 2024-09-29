@@ -124,28 +124,35 @@ st.pyplot(fig)
 
 def plot_feature_death_rate(feature):
     feature_data = covid_data[[feature, 'death']].dropna()
-    
-    # Calculate death rate per category in the feature
-    death_rate = feature_data.groupby(feature)['death'].mean().reset_index()
 
-    # Plot
-    fig, ax = plt.subplots(figsize=(6, 4))
-    sns.barplot(x=feature, y='death', data=death_rate, palette='coolwarm', ax=ax)
-    ax.set_title(f'Death Rate by {feature}')
-    ax.set_xlabel(f'{feature} (0 = No, 1 = Yes)')
-    ax.set_ylabel('Death Rate')
-    return fig
+    # Check if the feature has exactly two categories (0 and 1)
+    if set(feature_data[feature].unique()) == {0, 1}:
+        # Calculate death rate per category in the feature
+        death_rate = feature_data.groupby(feature)['death'].mean().reset_index()
+
+        # Plot
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.barplot(x=feature, y='death', data=death_rate, palette='coolwarm', ax=ax)
+        ax.set_title(f'Death Rate by {feature}')
+        ax.set_xlabel(f'{feature} (0 = No, 1 = Yes)')
+        ax.set_ylabel('Death Rate')
+        return fig
+    else:
+        st.write(f"Feature '{feature}' does not have binary values (0 or 1) and cannot be plotted as a death rate.")
+        return None
 
 # List of categorical features to analyze
 categorical_features = ['DIABETES', 'PNEUMONIA', 'COPD', 'ASTHMA', 'INMSUPR', 'HIPERTENSION', 
-                        'CARDIOVASCULAR', 'OBESITY', 'RENAL_CHRONIC', 'TOBACCO', 'PREGNANT']
+                        'CARDIOVASCULAR', 'OBESITY', 'RENAL_CHRONIC', 'TOBACCO', 'ICU', 'PREGNANT']
 
 # Display bar plots for each feature
 st.write("### Death Rate by Medical Condition and Other Features")
 for feature in categorical_features:
     st.write(f"### {feature}")
-    st.pyplot(plot_feature_death_rate(feature))
-
+    fig = plot_feature_death_rate(feature)
+    if fig:
+        st.pyplot(fig)
+        
 # Age Distribution by Death Outcome
 st.write("### Age Distribution by Death Outcome")
 fig, ax = plt.subplots(figsize=(8, 6))
