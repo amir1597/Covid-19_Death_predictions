@@ -5,12 +5,7 @@ import streamlit as st
 
 # Load dataset
 st.title("Medical Data Visualization")
-
-# File upload
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+    df = pd.read_csv('Covid_data.csv')
 
     st.write("Dataset Preview:")
     st.dataframe(df.head())
