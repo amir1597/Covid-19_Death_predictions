@@ -62,7 +62,7 @@ st.pyplot(fig)
 # Sex Distribution
 st.write("### Sex Distribution")
 fig, ax = plt.subplots(figsize=(6, 4))
-sns.countplot(x='SEX', hue='SEX', data=covid_data, palette='Set1', ax=ax, legend=False)
+sns.countplot(x='death', hue='SEX', data=covid_data, palette='Set1', ax=ax, legend=False)
 ax.set_title('Distribution of Sex')
 ax.set_xlabel('Sex (1 = Male, 2 = Female)')
 ax.set_ylabel('Count')
