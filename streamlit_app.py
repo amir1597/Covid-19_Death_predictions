@@ -13,12 +13,9 @@ st.dataframe(df.head())
 
 st.write("EDA")
 covid_data['ID'] = covid_data.index
-
 covid_data['death'] = covid_data['DATE_DIED'].apply(lambda x: 1 if x != '9999-99-99' else 0)
-
 st.write(covid_data.isnull().sum())
 st.write(covid_data.duplicated().sum())
-
 st.write("Basic Statistics:")
 st.write(df.describe())
 
