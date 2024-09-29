@@ -1,4 +1,5 @@
-# 📦 Streamlit App Starter Kit 
+# 🤖 Covid-19_Death_prediction
+
 ```
 ⬆️ (Replace above with your app's name)
 ```
