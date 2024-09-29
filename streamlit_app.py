@@ -15,7 +15,8 @@ covid_data['death'] = covid_data['DATE_DIED'].apply(lambda x: 1 if x != '9999-99
 st.write("EDA")
 st.write(covid_data.isnull().sum())
 st.write(covid_data.duplicated().sum())
-st.write(for column in covid_data.columns:
+st.write(
+    for column in covid_data.columns:
     print(f"Value counts for column: {column}")
     print(covid_data[column].value_counts())
     print("\n")
