@@ -8,9 +8,6 @@ st.title("Medical Data Visualization")
 
 covid_data = pd.read_csv('Covid_data.csv')
 
-
-
-
 st.write("Dataset Preview:")
 st.dataframe(df.head())
 
