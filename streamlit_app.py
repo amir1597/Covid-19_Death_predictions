@@ -77,6 +77,114 @@ ax.set_xlabel('ICU Admission (1 = Yes, 0 = No)')
 ax.set_ylabel('Count')
 st.pyplot(fig)
 
+# PREGNANT
+st.write("### Pregnancy vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='PREGNANT', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Pregnancy vs Death Outcome')
+ax.set_xlabel('Pregnant (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# DIABETES
+st.write("### Diabetes vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='DIABETES', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Diabetes vs Death Outcome')
+ax.set_xlabel('Diabetes (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# PNEUMONIA
+st.write("### Pneumonia vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='PNEUMONIA', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Pneumonia vs Death Outcome')
+ax.set_xlabel('Pneumonia (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# COPD
+st.write("### COPD vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='COPD', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('COPD vs Death Outcome')
+ax.set_xlabel('COPD (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# ASTHMA
+st.write("### Asthma vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='ASTHMA', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Asthma vs Death Outcome')
+ax.set_xlabel('Asthma (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# IMMUNOSUPPRESSION (INMSUPR)
+st.write("### Immunosuppression vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='INMSUPR', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Immunosuppression vs Death Outcome')
+ax.set_xlabel('Immunosuppression (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# HYPERTENSION
+st.write("### Hypertension vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='HIPERTENSION', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Hypertension vs Death Outcome')
+ax.set_xlabel('Hypertension (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# CARDIOVASCULAR DISEASE
+st.write("### Cardiovascular Disease vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='CARDIOVASCULAR', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Cardiovascular Disease vs Death Outcome')
+ax.set_xlabel('Cardiovascular Disease (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# OBESITY
+st.write("### Obesity vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='OBESITY', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Obesity vs Death Outcome')
+ax.set_xlabel('Obesity (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# RENAL CHRONIC DISEASE
+st.write("### Renal Chronic Disease vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='RENAL_CHRONIC', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Renal Chronic Disease vs Death Outcome')
+ax.set_xlabel('Renal Chronic Disease (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# TOBACCO USE
+st.write("### Tobacco Use vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='TOBACCO', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('Tobacco Use vs Death Outcome')
+ax.set_xlabel('Tobacco Use (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+# ICU Admission
+st.write("### ICU Admission vs Death Outcome")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.countplot(x='ICU', hue='death', data=covid_data, palette='Set2', ax=ax)
+ax.set_title('ICU Admission vs Death Outcome')
+ax.set_xlabel('ICU Admission (1 = Yes, 2 = No)')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
 # Correlation Heatmap
 st.write("### Correlation Heatmap")
 fig, ax = plt.subplots(figsize=(12, 8))
@@ -121,95 +229,6 @@ ax.set_title('Pregnancy vs Death Outcome (Females Only)')
 ax.set_xlabel('Pregnant (0 = No, 1 = Yes)')
 ax.set_ylabel('Count')
 st.pyplot(fig)
-
-def plot_feature_death_rate(feature):
-    feature_data = covid_data[[feature, 'death']].dropna()
-    
-    if set(feature_data[feature].unique()) == {0, 1}:  # Ensure binary data
-        death_rate = feature_data.groupby(feature)['death'].mean().reset_index()
-        fig, ax = plt.subplots(figsize=(6, 4))
-        sns.barplot(x=feature, y='death', data=death_rate, palette='coolwarm', ax=ax)
-        ax.set_title(f'Death Rate by {feature}')
-        ax.set_xlabel(f'{feature} (0 = No, 1 = Yes)')
-        ax.set_ylabel('Death Rate')
-        return fig
-    else:
-        st.write(f"Feature '{feature}' does not have binary values (0 or 1) and cannot be plotted.")
-        return None
-
-# Plotting death rate for each feature individually
-
-# DIABETES
-st.write("### Death Rate by DIABETES")
-fig_diabetes = plot_feature_death_rate('DIABETES')
-if fig_diabetes:
-    st.pyplot(fig_diabetes)
-
-# PNEUMONIA
-st.write("### Death Rate by PNEUMONIA")
-fig_pneumonia = plot_feature_death_rate('PNEUMONIA')
-if fig_pneumonia:
-    st.pyplot(fig_pneumonia)
-
-# COPD
-st.write("### Death Rate by COPD")
-fig_copd = plot_feature_death_rate('COPD')
-if fig_copd:
-    st.pyplot(fig_copd)
-
-# ASTHMA
-st.write("### Death Rate by ASTHMA")
-fig_asthma = plot_feature_death_rate('ASTHMA')
-if fig_asthma:
-    st.pyplot(fig_asthma)
-
-# IMMUNOSUPPRESSION (INMSUPR)
-st.write("### Death Rate by INMSUPR (Immunosuppression)")
-fig_inmsupr = plot_feature_death_rate('INMSUPR')
-if fig_inmsupr:
-    st.pyplot(fig_inmsupr)
-
-# HYPERTENSION
-st.write("### Death Rate by HYPERTENSION")
-fig_hypertension = plot_feature_death_rate('HIPERTENSION')
-if fig_hypertension:
-    st.pyplot(fig_hypertension)
-
-# CARDIOVASCULAR DISEASE
-st.write("### Death Rate by CARDIOVASCULAR Disease")
-fig_cardiovascular = plot_feature_death_rate('CARDIOVASCULAR')
-if fig_cardiovascular:
-    st.pyplot(fig_cardiovascular)
-
-# OBESITY
-st.write("### Death Rate by OBESITY")
-fig_obesity = plot_feature_death_rate('OBESITY')
-if fig_obesity:
-    st.pyplot(fig_obesity)
-
-# RENAL CHRONIC DISEASE
-st.write("### Death Rate by RENAL_CHRONIC (Chronic Kidney Disease)")
-fig_renal_chronic = plot_feature_death_rate('RENAL_CHRONIC')
-if fig_renal_chronic:
-    st.pyplot(fig_renal_chronic)
-
-# TOBACCO USE
-st.write("### Death Rate by TOBACCO")
-fig_tobacco = plot_feature_death_rate('TOBACCO')
-if fig_tobacco:
-    st.pyplot(fig_tobacco)
-
-# ICU Admission
-st.write("### Death Rate by ICU Admission")
-fig_icu = plot_feature_death_rate('ICU')
-if fig_icu:
-    st.pyplot(fig_icu)
-
-# PREGNANCY
-st.write("### Death Rate by PREGNANCY")
-fig_pregnant = plot_feature_death_rate('PREGNANT')
-if fig_pregnant:
-    st.pyplot(fig_pregnant)
 
         
 # Pregnancy vs Death Outcome (Filtered by Sex)
