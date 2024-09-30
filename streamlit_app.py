@@ -124,13 +124,9 @@ st.pyplot(fig)
 
 def plot_feature_death_rate(feature):
     feature_data = covid_data[[feature, 'death']].dropna()
-
-    # Check if the feature has exactly two categories (0 and 1)
-    if set(feature_data[feature].unique()) == {0, 1}:
-        # Calculate death rate per category in the feature
+    
+    if set(feature_data[feature].unique()) == {0, 1}:  # Ensure binary data
         death_rate = feature_data.groupby(feature)['death'].mean().reset_index()
-
-        # Plot
         fig, ax = plt.subplots(figsize=(6, 4))
         sns.barplot(x=feature, y='death', data=death_rate, palette='coolwarm', ax=ax)
         ax.set_title(f'Death Rate by {feature}')
@@ -138,30 +134,84 @@ def plot_feature_death_rate(feature):
         ax.set_ylabel('Death Rate')
         return fig
     else:
-        st.write(f"Feature '{feature}' does not have binary values (0 or 1) and cannot be plotted as a death rate.")
+        st.write(f"Feature '{feature}' does not have binary values (0 or 1) and cannot be plotted.")
         return None
 
-# List of categorical features to analyze
-categorical_features = ['DIABETES', 'PNEUMONIA', 'COPD', 'ASTHMA', 'INMSUPR', 'HIPERTENSION', 
-                        'CARDIOVASCULAR', 'OBESITY', 'RENAL_CHRONIC', 'TOBACCO', 'ICU', 'PREGNANT']
+# Plotting death rate for each feature individually
 
-# Display bar plots for each feature
-st.write("### Death Rate by Medical Condition and Other Features")
-for feature in categorical_features:
-    st.write(f"### {feature}")
-    fig = plot_feature_death_rate(feature)
-    if fig:
-        st.pyplot(fig)
+# DIABETES
+st.write("### Death Rate by DIABETES")
+fig_diabetes = plot_feature_death_rate('DIABETES')
+if fig_diabetes:
+    st.pyplot(fig_diabetes)
+
+# PNEUMONIA
+st.write("### Death Rate by PNEUMONIA")
+fig_pneumonia = plot_feature_death_rate('PNEUMONIA')
+if fig_pneumonia:
+    st.pyplot(fig_pneumonia)
+
+# COPD
+st.write("### Death Rate by COPD")
+fig_copd = plot_feature_death_rate('COPD')
+if fig_copd:
+    st.pyplot(fig_copd)
+
+# ASTHMA
+st.write("### Death Rate by ASTHMA")
+fig_asthma = plot_feature_death_rate('ASTHMA')
+if fig_asthma:
+    st.pyplot(fig_asthma)
+
+# IMMUNOSUPPRESSION (INMSUPR)
+st.write("### Death Rate by INMSUPR (Immunosuppression)")
+fig_inmsupr = plot_feature_death_rate('INMSUPR')
+if fig_inmsupr:
+    st.pyplot(fig_inmsupr)
+
+# HYPERTENSION
+st.write("### Death Rate by HYPERTENSION")
+fig_hypertension = plot_feature_death_rate('HIPERTENSION')
+if fig_hypertension:
+    st.pyplot(fig_hypertension)
+
+# CARDIOVASCULAR DISEASE
+st.write("### Death Rate by CARDIOVASCULAR Disease")
+fig_cardiovascular = plot_feature_death_rate('CARDIOVASCULAR')
+if fig_cardiovascular:
+    st.pyplot(fig_cardiovascular)
+
+# OBESITY
+st.write("### Death Rate by OBESITY")
+fig_obesity = plot_feature_death_rate('OBESITY')
+if fig_obesity:
+    st.pyplot(fig_obesity)
+
+# RENAL CHRONIC DISEASE
+st.write("### Death Rate by RENAL_CHRONIC (Chronic Kidney Disease)")
+fig_renal_chronic = plot_feature_death_rate('RENAL_CHRONIC')
+if fig_renal_chronic:
+    st.pyplot(fig_renal_chronic)
+
+# TOBACCO USE
+st.write("### Death Rate by TOBACCO")
+fig_tobacco = plot_feature_death_rate('TOBACCO')
+if fig_tobacco:
+    st.pyplot(fig_tobacco)
+
+# ICU Admission
+st.write("### Death Rate by ICU Admission")
+fig_icu = plot_feature_death_rate('ICU')
+if fig_icu:
+    st.pyplot(fig_icu)
+
+# PREGNANCY
+st.write("### Death Rate by PREGNANCY")
+fig_pregnant = plot_feature_death_rate('PREGNANT')
+if fig_pregnant:
+    st.pyplot(fig_pregnant)
+
         
-# Age Distribution by Death Outcome
-st.write("### Age Distribution by Death Outcome")
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.boxplot(x='death', y='AGE', data=covid_data, palette='Set3', ax=ax)
-ax.set_title('Age Distribution for Death vs Survival')
-ax.set_xlabel('Death (0 = Survived, 1 = Died)')
-ax.set_ylabel('Age')
-st.pyplot(fig)
-
 # Pregnancy vs Death Outcome (Filtered by Sex)
 st.write("### Pregnancy vs Death Outcome (Females Only)")
 # Filter the data for females (SEX = 2)
