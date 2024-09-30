@@ -142,51 +142,48 @@ with st.expander("Data Visualization", expanded=True):
     covid_data.drop(columns=["INTUBED","ICU","DATE_DIED"],
      inplace=True)
     
-with st.sidebar():
+st.sidebar.title("Input Data for Prediction")
 
-    st.write("### Input Data for Prediction")
-    
-    # Define input fields for the model
-    age = st.slider("Age", 0, 100, 30)
-    pneumonia = st.selectbox("Pneumonia (1 = Yes, 2 = No)", (1, 2))
-    diabetes = st.selectbox("Diabetes (1 = Yes, 2 = No)", (1, 2))
-    copd = st.selectbox("COPD (1 = Yes, 2 = No)", (1, 2))
-    asthma = st.selectbox("Asthma (1 = Yes, 2 = No)", (1, 2))
-    inmsupr = st.selectbox("Immunosuppression (1 = Yes, 2 = No)", (1, 2))
-    hypertension = st.selectbox("Hypertension (1 = Yes, 2 = No)", (1, 2))
-    cardiovascular = st.selectbox("Cardiovascular Disease (1 = Yes, 2 = No)", (1, 2))
-    obesity = st.selectbox("Obesity (1 = Yes, 2 = No)", (1, 2))
-    renal_chronic = st.selectbox("Renal Chronic Disease (1 = Yes, 2 = No)", (1, 2))
-    tobacco = st.selectbox("Tobacco Use (1 = Yes, 2 = No)", (1, 2))
-    
-    # Prepare input data for prediction
-    input_data = pd.DataFrame({
-        'AGE': [age],
-        'PNEUMONIA': [pneumonia],
-        'DIABETES': [diabetes],
-        'COPD': [copd],
-        'ASTHMA': [asthma],
-        'INMSUPR': [inmsupr],
-        'HIPERTENSION': [hypertension],
-        'CARDIOVASCULAR': [cardiovascular],
-        'OBESITY': [obesity],
-        'RENAL_CHRONIC': [renal_chronic],
-        'TOBACCO': [tobacco]
-    })
+# Define input fields for the model
+age = st.sidebar.slider("Age", 0, 100, 30)
+pneumonia = st.sidebar.selectbox("Pneumonia (1 = Yes, 2 = No)", (1, 2))
+diabetes = st.sidebar.selectbox("Diabetes (1 = Yes, 2 = No)", (1, 2))
+copd = st.sidebar.selectbox("COPD (1 = Yes, 2 = No)", (1, 2))
+asthma = st.sidebar.selectbox("Asthma (1 = Yes, 2 = No)", (1, 2))
+inmsupr = st.sidebar.selectbox("Immunosuppression (1 = Yes, 2 = No)", (1, 2))
+hypertension = st.sidebar.selectbox("Hypertension (1 = Yes, 2 = No)", (1, 2))
+cardiovascular = st.sidebar.selectbox("Cardiovascular Disease (1 = Yes, 2 = No)", (1, 2))
+obesity = st.sidebar.selectbox("Obesity (1 = Yes, 2 = No)", (1, 2))
+renal_chronic = st.sidebar.selectbox("Renal Chronic Disease (1 = Yes, 2 = No)", (1, 2))
+tobacco = st.sidebar.selectbox("Tobacco Use (1 = Yes, 2 = No)", (1, 2))
 
-    # Prepare features for training
-    x = covid_data.drop(columns=['death', 'ID'])
-    y = covid_data['death']
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+# Prepare input data for prediction
+input_data = pd.DataFrame({
+    'AGE': [age],
+    'PNEUMONIA': [pneumonia],
+    'DIABETES': [diabetes],
+    'COPD': [copd],
+    'ASTHMA': [asthma],
+    'INMSUPR': [inmsupr],
+    'HIPERTENSION': [hypertension],
+    'CARDIOVASCULAR': [cardiovascular],
+    'OBESITY': [obesity],
+    'RENAL_CHRONIC': [renal_chronic],
+    'TOBACCO': [tobacco]
+})
 
-    # Train model
-    model = LogisticRegression()
-    model.fit(x_train, y_train)
+# Train the model and make predictions (this part remains unchanged)
+x = covid_data.drop(columns=['death', 'ID'])
+y = covid_data['death']
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
 
-    # Button to make prediction
-    if st.button("Predict"):
-        prediction = model.predict(input_data)
-        if prediction[0] == 1:
-            st.success("Predicted Outcome: Death (1)")
-        else:
-            st.success("Predicted Outcome: Survival (0)")
+model = LogisticRegression()
+model.fit(x_train, y_train)
+
+# Button to make prediction
+if st.sidebar.button("Predict"):
+    prediction = model.predict(input_data)
+    if prediction[0] == 1:
+        st.sidebar.success("Predicted Outcome: Death (1)")
+    else:
+        st.sidebar.success("Predicted Outcome: Survival (0)")
