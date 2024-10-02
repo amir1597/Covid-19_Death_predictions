@@ -3,7 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score , confusion_matrix 
+from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 
 # Title for the app
@@ -25,7 +25,7 @@ covid_data = load_data()
 with st.expander("Dataset Preview", expanded=True):
     st.dataframe(covid_data.head())
 
-# Handle missing and incorrect data (converting date columns)
+# EDA section
 with st.expander("Exploratory Data Analysis (EDA)", expanded=True):
     st.write("### EDA")
     covid_data['ID'] = covid_data.index
@@ -66,7 +66,7 @@ with st.expander("Exploratory Data Analysis (EDA)", expanded=True):
     st.write("### After Cleaning the Data")
     st.dataframe(covid_data.head())
 
-# Data Visualization Section
+# Visualization section
 with st.expander("Data Visualization", expanded=True):
     # Age Distribution
     st.write("### Age Distribution")
@@ -89,9 +89,9 @@ with st.expander("Data Visualization", expanded=True):
         'OBESITY': 'Obesity',
         'RENAL_CHRONIC': 'Renal Chronic Disease',
         'TOBACCO': 'Tobacco Use',
-        'PREGNANT' : 'PREGNANT',
-        'INTUBED' : 'INTUBED',
-        'ICU' : 'ICU'
+        'PREGNANT': 'Pregnant',
+        'INTUBED': 'Intubed',
+        'ICU': 'ICU'
     }
 
     for feature, title in features.items():
@@ -103,33 +103,6 @@ with st.expander("Data Visualization", expanded=True):
         ax.set_ylabel('Count')
         st.pyplot(fig)
 
-    # Death Outcome Distribution
-    st.write("### Death Outcome Distribution")
-    fig, ax = plt.subplots(figsize=(6, 4))
-    sns.countplot(x='death', hue='death', data=covid_data, palette='Set2', ax=ax, legend=False)
-    ax.set_title('Death Outcome Distribution')
-    ax.set_xlabel('Death (0 = No, 1 = Yes)')
-    ax.set_ylabel('Count')
-    st.pyplot(fig)
-
-    # Sex Distribution
-    st.write("### Sex Distribution")
-    fig, ax = plt.subplots(figsize=(6, 4))
-    sns.countplot(x='SEX', hue='SEX', data=covid_data, palette='Set1', ax=ax, legend=False)
-    ax.set_title('Distribution of Sex')
-    ax.set_xlabel('Sex (1 = Male, 2 = Female)')
-    ax.set_ylabel('Count')
-    st.pyplot(fig)
-
-    # ICU Admission vs Death Outcome
-    st.write("### ICU Admission vs Death Outcome")
-    fig, ax = plt.subplots(figsize=(8, 5))
-    sns.countplot(x='ICU', hue='death', data=covid_data, palette='coolwarm', ax=ax)
-    ax.set_title('ICU Admission vs Death Outcome')
-    ax.set_xlabel('ICU Admission (1 = Yes, 0 = No)')
-    ax.set_ylabel('Count')
-    st.pyplot(fig)
-
     # Correlation Heatmap
     st.write("### Correlation Heatmap")
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -137,48 +110,55 @@ with st.expander("Data Visualization", expanded=True):
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     ax.set_title('Correlation Heatmap')
     st.pyplot(fig)
-    st.write("### Conclusion")
-    st.write("#### After all this Visualization we see that we dont need died_date for our model and we will drop the  icu and  INTUBED because they have to much missing values and for PREGNANT we will drop the missing values ")
-    covid_data.drop(columns=["INTUBED","ICU","DATE_DIED"],
-     inplace=True)
+    covid_data.drop(columns=["INTUBED","ICU","DATE_DIED","SEX","PREGNANT","COPD","ASTHMA","INMSUPR","OTHER_DISEASE","CARDIOVASCULAR","OBESITY","TOBACCO"], inplace=True)
+
+st.dataframe(covid_data.head())
+# Cache the model training so it runs only once
+
+x = covid_data.drop(columns=['death', 'ID',])
+y = covid_data['death']
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
     
+model = LogisticRegression()
+model.fit(x_train, y_train)
+
+# Train the model and keep it cached
+y_pred = model.predict(x_test)
+
+auc_score =  accuracy_score(y_test ,y_pred)
+auc_score
+# Sidebar for user inputs using session state
 st.sidebar.title("Input Data for Prediction")
 
-# Define input fields for the model
-age = st.sidebar.slider("Age", 0, 100, 30)
-pneumonia = st.sidebar.selectbox("Pneumonia (1 = Yes, 2 = No)", (1, 2))
-diabetes = st.sidebar.selectbox("Diabetes (1 = Yes, 2 = No)", (1, 2))
-copd = st.sidebar.selectbox("COPD (1 = Yes, 2 = No)", (1, 2))
-asthma = st.sidebar.selectbox("Asthma (1 = Yes, 2 = No)", (1, 2))
-inmsupr = st.sidebar.selectbox("Immunosuppression (1 = Yes, 2 = No)", (1, 2))
-hypertension = st.sidebar.selectbox("Hypertension (1 = Yes, 2 = No)", (1, 2))
-cardiovascular = st.sidebar.selectbox("Cardiovascular Disease (1 = Yes, 2 = No)", (1, 2))
-obesity = st.sidebar.selectbox("Obesity (1 = Yes, 2 = No)", (1, 2))
-renal_chronic = st.sidebar.selectbox("Renal Chronic Disease (1 = Yes, 2 = No)", (1, 2))
-tobacco = st.sidebar.selectbox("Tobacco Use (1 = Yes, 2 = No)", (1, 2))
+# Define input fields for the model with st.session_state to persist values
+def update_session_state(key, default_value):
+    if key not in st.session_state:
+        st.session_state[key] = default_value
+    return st.session_state[key]
+
+usmer = st.sidebar.selectbox("USMER (1 = Yes, 2 = No)", (1, 2), index=update_session_state('USMER', 0))
+medical_unit = st.sidebar.selectbox("MEDICAL_UNIT (1 = Yes, 2 = No)", (1, 2), index=update_session_state('MEDICAL_UNIT', 0))
+patient_type = st.sidebar.selectbox("PATIENT_TYPE (1 = Yes, 2 = No)", (1, 2), index=update_session_state('PATIENT_TYPE', 0))
+pneumonia = st.sidebar.selectbox("Pneumonia (1 = Yes, 2 = No)", (1, 2), index=update_session_state('pneumonia', 0))
+age = st.sidebar.slider("Age", 0, 100, update_session_state('age', 30))
+diabetes = st.sidebar.selectbox("Diabetes (1 = Yes, 2 = No)", (1, 2), index=update_session_state('diabetes', 0))
+hypertension = st.sidebar.selectbox("Hypertension (1 = Yes, 2 = No)", (1, 2), index=update_session_state('hypertension', 0))
+renal_chronic = st.sidebar.selectbox("Renal Chronic Disease (1 = Yes, 2 = No)", (1, 2), index=update_session_state('renal_chronic', 0))
+clasiffication_final = st.sidebar.slider("CLASIFFICATION_FINAL", 1, 7, update_session_state('CLASIFFICATION_FINAL', 3))
+
 
 # Prepare input data for prediction
 input_data = pd.DataFrame({
-    'AGE': [age],
+    'USMER': [usmer],
+    'MEDICAL_UNIT': [medical_unit],
+    'PATIENT_TYPE': [patient_type],
     'PNEUMONIA': [pneumonia],
+    'AGE': [age],
     'DIABETES': [diabetes],
-    'COPD': [copd],
-    'ASTHMA': [asthma],
-    'INMSUPR': [inmsupr],
     'HIPERTENSION': [hypertension],
-    'CARDIOVASCULAR': [cardiovascular],
-    'OBESITY': [obesity],
     'RENAL_CHRONIC': [renal_chronic],
-    'TOBACCO': [tobacco]
+    'CLASIFFICATION_FINAL': [clasiffication_final],
 })
-
-# Train the model and make predictions (this part remains unchanged)
-x = covid_data.drop(columns=['death', 'ID'])
-y = covid_data['death']
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
-
-model = LogisticRegression()
-model.fit(x_train, y_train)
 
 # Button to make prediction
 if st.sidebar.button("Predict"):
