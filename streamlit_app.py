@@ -110,7 +110,7 @@ with st.expander("Data Visualization", expanded=True):
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     ax.set_title('Correlation Heatmap')
     st.pyplot(fig)
-    covid_data.drop(columns=["INTUBED","ICU","DATE_DIED","SEX","PREGNANT","COPD","ASTHMA","INMSUPR","OTHER_DISEASE","CARDIOVASCULAR","OBESITY","TOBACCO"], inplace=True)
+    covid_data.drop(columns=['Unnamed: 0',"INTUBED","ICU","DATE_DIED","SEX","PREGNANT","COPD","ASTHMA","INMSUPR","OTHER_DISEASE","CARDIOVASCULAR","OBESITY","TOBACCO"], inplace=True)
 
 st.dataframe(covid_data.head())
 # Cache the model training so it runs only once
