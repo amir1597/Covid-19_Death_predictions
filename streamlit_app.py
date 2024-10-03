@@ -13,7 +13,7 @@ st.title("COVID-19 Death Prediction")
 @st.cache_data
 def load_data():
     try:
-        covid_data = pd.read_csv('Covid_data.csv')
+        covid_data = pd.read_csv('Covid_19_data.csv')
         return covid_data
     except FileNotFoundError:
         st.error("Dataset not found. Please check the file path.")
